@@ -232,7 +232,7 @@
       <label style="font-size: 0.85rem; color: #8b949e;">Store Name:</label>
       <input type="text" id="sBrandName" placeholder="Store Name">
       
-      <label style="font-size: 0.85rem; color: #8b949e;">Logo Image URL (or text initials like SG):</label>
+      <label style="font-size: 0.85rem; color: #8b949e;">Logo Image URL (or text like SG):</label>
       <input type="text" id="sLogo" placeholder="Logo Image URL or SG">
 
       <label style="font-size: 0.85rem; color: #8b949e;">WhatsApp Contact Number (e.g. 923043337555):</label>
@@ -284,7 +284,7 @@
       document.getElementById('heroTitle').innerText = hTitle;
       document.getElementById('heroDesc').innerText = hDesc;
       document.getElementById('aboutText').innerText = about;
-      document.getElementById('whatsappBtn.href').href = "https://wa.me/" + phone;
+      document.getElementById('whatsappBtn').href = "https://wa.me/" + phone;
 
       const logoBox = document.getElementById('logoContainer');
       if (logo.startsWith('http://') || logo.startsWith('https://')) {
@@ -365,11 +365,11 @@
       const phone = document.getElementById('sPhone').value;
       const heroTitle = document.getElementById('sHeroTitle').value;
       const heroDesc = document.getElementById('sHeroDesc').value;
-      const aboutText = document.getElementById('sAbout').value;
+      const aboutText = document.getElementById('sAbout, #sAbout').value || document.getElementById('sAbout').value;
       const features = document.getElementById('sFeatures').value;
 
       database.ref('settings').set({
-        brandName, logoText, phone, heroTitle, heroDesc, aboutText, features
+        brandName, logoText, phone, heroTitle, heroDesc, aboutText: document.getElementById('sAbout').value, features
       }).then(() => {
         closeSettingsModal();
         alert("Website settings updated successfully!");
@@ -383,7 +383,7 @@
       const desc = document.getElementById('pDesc').value;
 
       if (!name || !price) {
-        alert("Please enter Name and Profile/Price!");
+        alert("Please enter Name and Price!");
         return;
       }
 
@@ -400,7 +400,7 @@
 
     function deleteProduct(id) {
       if (confirm("Are you sure you want to delete this product?")) {
-        database.ref('products/' + id).remove();
+        database.ref('products/' + id).removefield ? database.ref('products/' + id).remove() : database.ref('products/' + id).remove();
       }
     }
   </script>
