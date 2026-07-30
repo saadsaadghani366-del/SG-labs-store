@@ -4,6 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="pageTitle">SG Labs Store</title>
+  <!-- PWA Manifest link injected directly via Data URL -->
+  <link rel="manifest" href='data:application/manifest+json,{
+    "name": "Saad Gadgets Lab",
+    "short_name": "SG Labs",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#0d1117",
+    "theme_color": "#238636",
+    "icons": [
+      {
+        "src": "https://i.ibb.co/3mdfkkLb",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "https://i.ibb.co/3mdfkkLb",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }'>
+  <meta name="theme-color" content="#238636">
   <style>
     :root {
       --bg-color: #0d1117;
@@ -196,7 +218,7 @@
     <p id="heroDesc">Explore high-quality electronic kits, robotics components, and smart automation modules.</p>
   </div>
 
-  <!-- About & Features Section -->
+  <!-- About & Views Section -->
   <div class="info-section">
     <div class="box">
       <h3>About Us</h3>
@@ -311,19 +333,21 @@
       document.getElementById('whatsappBtn').href = "https://wa.me/" + phone;
 
       const logoBox = document.getElementById('logoContainer');
-      if (logo.startsWith('http://') || logo.startsWith('https://')) {
+      if (logo && (logo.startsWith('http://') || logo.startsWith('https://'))) {
         logoBox.innerHTML = `<img src="${logo}" alt="Logo">`;
       } else {
-        logoBox.innerText = logo;
+        logoBox.innerText = logo || "SG";
       }
 
       const fList = document.getElementById('featuresList');
       fList.innerHTML = '';
-      features.split('\n').forEach(f => {
-        if(f.trim() !== '') {
-          fList.innerHTML += `<li>${f}</li>`;
-        }
-      });
+      if (features) {
+        features.split('\n').forEach(f => {
+          if(f.trim() !== '') {
+            fList.innerHTML += `<li>${f}</li>`;
+          }
+        });
+      }
     });
 
     // Load Products
@@ -393,10 +417,18 @@
       const features = document.getElementById('sFeatures').value;
 
       database.ref('settings').set({
-        brandName, logoText, phone, heroTitle, heroDesc, aboutText, features
+        brandName: brandName || "",
+        logoText: logoText || "SG",
+        phone: phone || "923043337555",
+        heroTitle: heroTitle || "",
+        heroDesc: heroDesc || "",
+        aboutText: aboutText || "",
+        features: features || ""
       }).then(() => {
         closeSettingsModal();
         alert("Website settings updated successfully!");
+      }).chats?.((error) => {
+        alert("Error saving: " + error.message);
       });
     }
 
