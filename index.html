@@ -4,557 +4,2912 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NG Tours & Transport System — Advanced Accounting</title>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <style>
-*{box-sizing:border-box} :root{--blue:#0b1f33;--blue2:#1565c0;--accent:#1e88e5;--light:#f4f7fb;--border:#d8e0e8;--danger:#d32f2f;--success:#198754;--text:#17212b}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--light);color:var(--text)}
-button,input,select,textarea{font:inherit}.hidden{display:none!important}
-.screen{min-height:100vh}.login-wrap{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#071521,#16466d);padding:20px}
-.card{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:30px;width:430px;max-width:96%}
-.card h1{text-align:center;margin:5px 0 8px;font-size:24px}.card p{text-align:center;color:#667788}
-.input,.select,.textarea{width:100%;padding:11px;margin:6px 0;border:1px solid var(--border);border-radius:8px;outline:none;background:#fff}
-.input:focus,.select:focus,.textarea:focus{border-color:var(--accent)} .btn{border:0;border-radius:8px;padding:9px 13px;cursor:pointer;font-weight:600}
-.primary{background:var(--accent);color:#fff}.dark{background:var(--blue);color:#fff}.danger{background:var(--danger);color:#fff}.success{background:var(--success);color:#fff}.light{background:#edf2f7;color:#17212b}.btn:hover{opacity:.9}
-.msg{text-align:center;font-size:13px;min-height:20px;margin-top:8px}.err{color:var(--danger)!important}.ok{color:var(--success)!important}
-.topbar{height:68px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:10px}
-.brand{font-size:19px;font-weight:bold}.sub{font-size:11px;opacity:.7;margin-top:3px}.container{max-width:1400px;margin:auto;padding:24px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px}.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:15px}
-.file-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:17px;box-shadow:0 3px 12px rgba(0,0,0,.04)}
-.file-name{font-weight:bold;font-size:16px;word-break:break-word}.file-date{font-size:11px;color:#788896;margin-top:7px}.actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.empty{text-align:center;color:#778899;padding:70px 20px;grid-column:1/-1}
-.stats{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px}.stat small{color:#71808e}.stat strong{display:block;font-size:19px;margin-top:5px}
-.workspace{position:fixed;inset:0;background:#fff;z-index:1000;display:none;flex-direction:column}
-.sheet-header{height:58px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:8px}.sheet-actions{display:flex;gap:5px;flex-wrap:wrap}
-.toolbar{background:#f4f6f8;border-bottom:1px solid var(--border);padding:6px;display:flex;gap:5px;flex-wrap:wrap}.tool{border:1px solid #ccd5df;background:#fff;min-width:34px;height:31px;border-radius:5px;cursor:pointer}
-.formula{display:flex;height:38px;border-bottom:1px solid var(--border);align-items:center}.namebox{width:76px;padding:9px;font-weight:bold;background:#f7f9fb;border-right:1px solid var(--border)}
-#formulaBar{flex:1;height:100%;border:0;outline:0;padding:8px}.scroll{flex:1;overflow:auto}
-table{border-collapse:collapse;table-layout:fixed} th,td{border:1px solid #d5dce3;min-width:110px;height:29px;padding:4px 7px;white-space:nowrap;overflow:hidden}
-th{position:sticky;top:0;background:#eef2f6;z-index:5;text-align:center}.rowhead{position:sticky;left:0;background:#eef2f6;z-index:6;width:52px;min-width:52px;text-align:center}
-.cell{background:#fff;outline:none}.cell.selected{outline:2px solid var(--accent);outline-offset:-2px}.cell.formula-error{background:#fff1f1;color:#b00020}
-.footer{height:38px;background:#f4f6f8;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;padding:0 12px;font-size:12px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:2000}.modal-card{width:760px;max-width:94%;max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:22px}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tab.active{background:var(--accent);color:#fff}.panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:15px}
-.weeknav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.weeknav button.active{background:var(--blue);color:#fff}
-.report-table{width:100%;border-collapse:collapse}.report-table th,.report-table td{position:static;min-width:0;padding:7px;text-align:left}.report-table th{background:#eef2f6}
-.toast{position:fixed;right:18px;bottom:18px;background:#17212b;color:#fff;padding:12px 15px;border-radius:8px;display:none;z-index:5000;max-width:360px}
-@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.grid3{grid-template-columns:1fr 1fr}.sheet-actions{display:none}}
-@media(max-width:600px){.topbar{height:auto;min-height:68px;padding:10px}.container{padding:12px}.header{flex-direction:column;align-items:stretch}.stats{grid-template-columns:1fr 1fr}.grid2,.grid3{grid-template-columns:1fr}.toolbar{overflow-x:auto;flex-wrap:nowrap}.card{padding:22px}.brand{font-size:16px}}
+*{box-sizing:border-box}
+
+:root{
+ --blue:#0b1f33;
+ --blue2:#1565c0;
+ --accent:#1e88e5;
+ --light:#f4f7fb;
+ --border:#d8e0e8;
+ --danger:#d32f2f;
+ --success:#198754;
+ --text:#17212b;
+}
+
+body{
+ margin:0;
+ font-family:Arial,Helvetica,sans-serif;
+ background:var(--light);
+ color:var(--text);
+}
+
+button,input,select,textarea{font:inherit}
+.hidden{display:none!important}
+
+.btn{
+ border:0;
+ border-radius:8px;
+ padding:9px 13px;
+ cursor:pointer;
+ font-weight:600;
+}
+
+.primary{background:var(--accent);color:#fff}
+.dark{background:var(--blue);color:#fff}
+.danger{background:var(--danger);color:#fff}
+.success{background:var(--success);color:#fff}
+.light{background:#edf2f7;color:#17212b}
+.btn:hover{opacity:.9}
+
+.input,.select,.textarea{
+ width:100%;
+ padding:11px;
+ margin:6px 0;
+ border:1px solid var(--border);
+ border-radius:8px;
+ outline:none;
+ background:#fff;
+}
+
+.input:focus,.select:focus,.textarea:focus{
+ border-color:var(--accent);
+}
+
+.topbar{
+ height:68px;
+ background:var(--blue);
+ color:#fff;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 22px;
+ gap:10px;
+}
+
+.brand{
+ font-size:19px;
+ font-weight:bold;
+}
+
+.sub{
+ font-size:11px;
+ opacity:.7;
+ margin-top:3px;
+}
+
+.container{
+ max-width:1400px;
+ margin:auto;
+ padding:24px;
+}
+
+.header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:20px;
+ gap:12px;
+}
+
+.file-list{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+ gap:15px;
+}
+
+.file-card{
+ background:#fff;
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:17px;
+ box-shadow:0 3px 12px rgba(0,0,0,.04);
+}
+
+.file-name{
+ font-weight:bold;
+ font-size:16px;
+ word-break:break-word;
+}
+
+.file-date{
+ font-size:11px;
+ color:#788896;
+ margin-top:7px;
+}
+
+.actions{
+ display:flex;
+ gap:7px;
+ margin-top:12px;
+ flex-wrap:wrap;
+}
+
+.empty{
+ text-align:center;
+ color:#778899;
+ padding:70px 20px;
+ grid-column:1/-1;
+}
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(6,minmax(130px,1fr));
+ gap:10px;
+ margin-bottom:18px;
+}
+
+.stat{
+ background:#fff;
+ border:1px solid var(--border);
+ border-radius:10px;
+ padding:12px;
+}
+
+.stat small{color:#71808e}
+
+.stat strong{
+ display:block;
+ font-size:19px;
+ margin-top:5px;
+}
+
+.workspace{
+ position:fixed;
+ inset:0;
+ background:#fff;
+ z-index:1000;
+ display:none;
+ flex-direction:column;
+}
+
+.sheet-header{
+ height:58px;
+ background:var(--blue);
+ color:#fff;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:0 12px;
+ gap:8px;
+}
+
+.sheet-actions{
+ display:flex;
+ gap:5px;
+ flex-wrap:wrap;
+}
+
+.toolbar{
+ background:#f4f6f8;
+ border-bottom:1px solid var(--border);
+ padding:6px;
+ display:flex;
+ gap:5px;
+ flex-wrap:wrap;
+}
+
+.tool{
+ border:1px solid #ccd5df;
+ background:#fff;
+ min-width:34px;
+ height:31px;
+ border-radius:5px;
+ cursor:pointer;
+}
+
+.formula{
+ display:flex;
+ height:38px;
+ border-bottom:1px solid var(--border);
+ align-items:center;
+}
+
+.namebox{
+ width:76px;
+ padding:9px;
+ font-weight:bold;
+ background:#f7f9fb;
+ border-right:1px solid var(--border);
+}
+
+#formulaBar{
+ flex:1;
+ height:100%;
+ border:0;
+ outline:0;
+ padding:8px;
+}
+
+.scroll{
+ flex:1;
+ overflow:auto;
+}
+
+table{
+ border-collapse:collapse;
+ table-layout:fixed;
+}
+
+th,td{
+ border:1px solid #d5dce3;
+ min-width:110px;
+ height:29px;
+ padding:4px 7px;
+ white-space:nowrap;
+ overflow:hidden;
+}
+
+th{
+ position:sticky;
+ top:0;
+ background:#eef2f6;
+ z-index:5;
+ text-align:center;
+}
+
+.rowhead{
+ position:sticky;
+ left:0;
+ background:#eef2f6;
+ z-index:6;
+ width:52px;
+ min-width:52px;
+ text-align:center;
+}
+
+.cell{
+ background:#fff;
+ outline:none;
+}
+
+.cell.selected{
+ outline:2px solid var(--accent);
+ outline-offset:-2px;
+}
+
+.cell.formula-error{
+ background:#fff1f1;
+ color:#b00020;
+}
+
+.footer{
+ height:38px;
+ background:#f4f6f8;
+ border-top:1px solid var(--border);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:0 12px;
+ font-size:12px;
+}
+
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.5);
+ display:none;
+ align-items:center;
+ justify-content:center;
+ z-index:2000;
+}
+
+.modal-card{
+ width:760px;
+ max-width:94%;
+ max-height:90vh;
+ overflow:auto;
+ background:#fff;
+ border-radius:14px;
+ padding:22px;
+}
+
+.modal-actions{
+ display:flex;
+ justify-content:flex-end;
+ gap:8px;
+ margin-top:18px;
+}
+
+.grid2{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px;
+}
+
+.grid3{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+}
+
+.tabs{
+ display:flex;
+ gap:6px;
+ flex-wrap:wrap;
+ margin-bottom:12px;
+}
+
+.tab.active{
+ background:var(--accent);
+ color:#fff;
+}
+
+.panel{
+ background:#fff;
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:15px;
+ margin-bottom:15px;
+}
+
+.report-table{
+ width:100%;
+ border-collapse:collapse;
+}
+
+.report-table th,
+.report-table td{
+ position:static;
+ min-width:0;
+ padding:7px;
+ text-align:left;
+}
+
+.report-table th{
+ background:#eef2f6;
+}
+
+.toast{
+ position:fixed;
+ right:18px;
+ bottom:18px;
+ background:#17212b;
+ color:#fff;
+ padding:12px 15px;
+ border-radius:8px;
+ display:none;
+ z-index:5000;
+ max-width:360px;
+}
+
+@media(max-width:900px){
+ .stats{grid-template-columns:repeat(3,1fr)}
+ .grid3{grid-template-columns:1fr 1fr}
+ .sheet-actions{display:none}
+}
+
+@media(max-width:600px){
+ .topbar{
+  height:auto;
+  min-height:68px;
+  padding:10px;
+ }
+
+ .container{padding:12px}
+
+ .header{
+  flex-direction:column;
+  align-items:stretch;
+ }
+
+ .stats{grid-template-columns:1fr 1fr}
+
+ .grid2,.grid3{grid-template-columns:1fr}
+
+ .toolbar{
+  overflow-x:auto;
+  flex-wrap:nowrap;
+ }
+
+ .brand{font-size:16px}
+}
 </style>
 </head>
+
 <body>
 
-<div id="authScreen" class="screen login-wrap">
- <div class="card">
-  <h1 id="authTitle">NG Tours & Transport System</h1>
-  <p id="authSubtitle">Create your account to continue</p>
+<!-- HOME -->
+<div id="homeScreen">
 
-  <div id="nameBox">
-   <input id="name" class="input" type="text" placeholder="Full Name" autocomplete="name">
-  </div>
-
-  <input id="email" class="input" type="email" placeholder="Email Address" autocomplete="email">
-  <input id="password" class="input" type="password" placeholder="Password" autocomplete="new-password">
-  <input id="confirmPassword" class="input" type="password" placeholder="Confirm Password" autocomplete="new-password">
-
-  <button id="authBtn" class="btn primary" style="width:100%;margin-top:8px" onclick="submitAuth()">Create Account</button>
-  <div id="authMsg" class="msg"></div>
-
-  <button id="toggleBtn" class="btn light" style="width:100%;margin-top:8px" onclick="toggleAuth()">Already have an account? Login</button>
- </div>
-</div>
-
-<div id="homeScreen" class="hidden">
  <div class="topbar">
-  <div><div class="brand" id="brandName">NG Tours & Transport System</div><div class="sub">Advanced Cloud Accounting & Transport Management</div></div>
+
+  <div>
+   <div class="brand" id="brandName">
+    NG Tours & Transport System
+   </div>
+
+   <div class="sub">
+    Advanced Cloud Accounting & Transport Management
+   </div>
+  </div>
+
   <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
-   <span id="userName" style="font-size:13px"></span>
-   <button class="btn light" onclick="openSettings()">Settings</button>
-   <button class="btn danger" onclick="logout()">Logout</button>
+
+   <span style="font-size:13px">
+    Cloud Accounting
+   </span>
+
+   <button class="btn light" onclick="openSettings()">
+    Settings
+   </button>
+
   </div>
+
  </div>
+
+
  <div class="container">
+
   <div class="stats">
-   <div class="stat"><small>Total Income</small><strong id="dashIncome">0</strong></div>
-   <div class="stat"><small>Total Expenses</small><strong id="dashExpense">0</strong></div>
-   <div class="stat"><small>Net Amount</small><strong id="dashNet">0</strong></div>
-   <div class="stat"><small>Cash</small><strong id="dashCash">0</strong></div>
-   <div class="stat"><small>Bank</small><strong id="dashBank">0</strong></div>
-   <div class="stat"><small>Pending</small><strong id="dashPending">0</strong></div>
+
+   <div class="stat">
+    <small>Total Income</small>
+    <strong id="dashIncome">0</strong>
+   </div>
+
+   <div class="stat">
+    <small>Total Expenses</small>
+    <strong id="dashExpense">0</strong>
+   </div>
+
+   <div class="stat">
+    <small>Net Amount</small>
+    <strong id="dashNet">0</strong>
+   </div>
+
+   <div class="stat">
+    <small>Cash</small>
+    <strong id="dashCash">0</strong>
+   </div>
+
+   <div class="stat">
+    <small>Bank</small>
+    <strong id="dashBank">0</strong>
+   </div>
+
+   <div class="stat">
+    <small>Pending</small>
+    <strong id="dashPending">0</strong>
+   </div>
+
   </div>
+
+
   <div class="header">
-   <div><h2 style="margin:0">Accounting Files</h2><div style="font-size:13px;color:#71808e">Create, open, rename and manage cloud accounting files.</div></div>
-   <button class="btn primary" onclick="openNewFile()">+ New File</button>
+
+   <div>
+    <h2 style="margin:0">
+     Accounting Files
+    </h2>
+
+    <div style="font-size:13px;color:#71808e">
+     Create, open, rename and manage cloud accounting files.
+    </div>
+   </div>
+
+   <button class="btn primary" onclick="openNewFile()">
+    + New File
+   </button>
+
   </div>
+
   <div id="fileList" class="file-list"></div>
+
  </div>
 </div>
+
+
+<!-- WORKSPACE -->
 
 <div id="workspace" class="workspace">
+
  <div class="sheet-header">
+
   <div style="display:flex;align-items:center;gap:7px;min-width:0">
-   <button class="btn light" onclick="exitSpreadsheet()">← Exit</button>
-   <span id="activeFileName" style="font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Spreadsheet</span>
-   <span id="unsaved" style="color:#ffca28;font-size:12px;display:none">● Unsaved</span>
+
+   <button class="btn light" onclick="exitSpreadsheet()">
+    ← Exit
+   </button>
+
+   <span id="activeFileName"
+         style="font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+    Spreadsheet
+   </span>
+
+   <span id="unsaved"
+         style="color:#ffca28;font-size:12px;display:none">
+    ● Unsaved
+   </span>
+
   </div>
+
+
   <div class="sheet-actions">
-   <button class="btn success" onclick="saveCurrentFile()">Save</button>
-   <button class="btn light" onclick="undo()">Undo</button>
-   <button class="btn light" onclick="redo()">Redo</button>
-   <button class="btn light" onclick="openReport()">Reports</button>
-   <button class="btn light" onclick="exportCSV()">CSV</button>
-   <button class="btn light" onclick="exportExcel()">Excel</button>
-   <button class="btn light" onclick="window.print()">Print/PDF</button>
+
+   <button class="btn success" onclick="saveCurrentFile()">
+    Save
+   </button>
+
+   <button class="btn light" onclick="undo()">
+    Undo
+   </button>
+
+   <button class="btn light" onclick="redo()">
+    Redo
+   </button>
+
+   <button class="btn light" onclick="openReport()">
+    Reports
+   </button>
+
+   <button class="btn light" onclick="exportCSV()">
+    CSV
+   </button>
+
+   <button class="btn light" onclick="exportExcel()">
+    Excel
+   </button>
+
+   <button class="btn light" onclick="window.print()">
+    Print/PDF
+   </button>
+
   </div>
+
  </div>
+
+
  <div class="toolbar">
-  <button class="tool" onclick="format('bold')"><b>B</b></button><button class="tool" onclick="format('italic')"><i>I</i></button><button class="tool" onclick="format('underline')"><u>U</u></button>
-  <button class="tool" onclick="align('left')">L</button><button class="tool" onclick="align('center')">C</button><button class="tool" onclick="align('right')">R</button>
-  <button class="tool" onclick="addRow()">+ Row</button><button class="tool" onclick="addColumn()">+ Column</button><button class="tool" onclick="deleteRow()">− Row</button><button class="tool" onclick="deleteColumn()">− Column</button>
-  <button class="tool" onclick="insertAccountingTemplate()">Accounting Template</button><button class="tool" onclick="insertTransportTemplate()">Transport Template</button>
-  <button class="tool" onclick="clearCell()">Clear</button><button class="tool" onclick="findReplace()">Find/Replace</button>
+
+  <button class="tool" onclick="format('bold')">
+   <b>B</b>
+  </button>
+
+  <button class="tool" onclick="format('italic')">
+   <i>I</i>
+  </button>
+
+  <button class="tool" onclick="format('underline')">
+   <u>U</u>
+  </button>
+
+  <button class="tool" onclick="align('left')">
+   L
+  </button>
+
+  <button class="tool" onclick="align('center')">
+   C
+  </button>
+
+  <button class="tool" onclick="align('right')">
+   R
+  </button>
+
+  <button class="tool" onclick="addRow()">
+   + Row
+  </button>
+
+  <button class="tool" onclick="addColumn()">
+   + Column
+  </button>
+
+  <button class="tool" onclick="deleteRow()">
+   − Row
+  </button>
+
+  <button class="tool" onclick="deleteColumn()">
+   − Column
+  </button>
+
+  <button class="tool" onclick="insertAccountingTemplate()">
+   Accounting Template
+  </button>
+
+  <button class="tool" onclick="insertTransportTemplate()">
+   Transport Template
+  </button>
+
+  <button class="tool" onclick="clearCell()">
+   Clear
+  </button>
+
+  <button class="tool" onclick="findReplace()">
+   Find/Replace
+  </button>
+
  </div>
- <div class="formula"><div id="cellName" class="namebox">A1</div><div style="padding:0 10px;font-weight:bold">fx</div><input id="formulaBar" placeholder="Enter value or formula..." onkeydown="formulaKey(event)" oninput="formulaChanged()"></div>
- <div class="scroll"><table id="sheet"><thead id="head"></thead><tbody id="body"></tbody></table></div>
- <div class="footer"><span id="status">Ready</span><span>Ctrl+S Save • Ctrl+Z Undo • Ctrl+Y Redo • Ctrl+F Find • F2 Edit</span></div>
+
+
+ <div class="formula">
+
+  <div id="cellName" class="namebox">
+   A1
+  </div>
+
+  <div style="padding:0 10px;font-weight:bold">
+   fx
+  </div>
+
+  <input
+   id="formulaBar"
+   placeholder="Enter value or formula..."
+   onkeydown="formulaKey(event)"
+   oninput="formulaChanged()"
+  >
+
+ </div>
+
+
+ <div class="scroll">
+
+  <table id="sheet">
+
+   <thead id="head"></thead>
+
+   <tbody id="body"></tbody>
+
+  </table>
+
+ </div>
+
+
+ <div class="footer">
+
+  <span id="status">
+   Ready
+  </span>
+
+  <span>
+   Ctrl+S Save • Ctrl+Z Undo • Ctrl+Y Redo • Ctrl+F Find • F2 Edit
+  </span>
+
+ </div>
+
 </div>
 
-<div id="newFileModal" class="modal"><div class="modal-card">
- <h3>Create New Accounting File</h3><input id="newFileName" class="input" placeholder="Enter file name">
- <div class="modal-actions"><button class="btn light" onclick="closeNewFile()">Cancel</button><button class="btn primary" onclick="createFile()">Create File</button></div>
-</div></div>
 
-<div id="settingsModal" class="modal"><div class="modal-card">
- <h3>Company Settings</h3>
- <div class="grid2"><div><label>Company Name</label><input id="companyNameInput" class="input"></div><div><label>System Name</label><input id="systemNameInput" class="input"></div>
- <div><label>Currency</label><select id="currencyInput" class="select"><option>PKR</option><option>USD</option><option>EUR</option><option>GBP</option></select></div>
- <div><label>Date Format</label><select id="dateFormatInput" class="select"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select></div></div>
- <div class="modal-actions"><button class="btn light" onclick="closeSettings()">Cancel</button><button class="btn primary" onclick="saveSettings()">Save Settings</button></div>
-</div></div>
+<!-- NEW FILE -->
 
-<div id="reportModal" class="modal"><div class="modal-card">
- <h3>Accounting Reports</h3>
- <div class="tabs">
-  <button class="btn light tab active" onclick="reportType='weekly';renderReport()">Weekly</button>
-  <button class="btn light tab" onclick="reportType='monthly';renderReport()">Monthly</button>
-  <button class="btn light tab" onclick="reportType='vehicle';renderReport()">Vehicle</button>
-  <button class="btn light tab" onclick="reportType='customer';renderReport()">Customer</button>
-  <button class="btn light tab" onclick="reportType='driver';renderReport()">Driver</button>
-  <button class="btn light tab" onclick="reportType='category';renderReport()">Category</button>
+<div id="newFileModal" class="modal">
+
+ <div class="modal-card">
+
+  <h3>Create New Accounting File</h3>
+
+  <input
+   id="newFileName"
+   class="input"
+   placeholder="Enter file name"
+  >
+
+  <div class="modal-actions">
+
+   <button class="btn light" onclick="closeNewFile()">
+    Cancel
+   </button>
+
+   <button class="btn primary" onclick="createFile()">
+    Create File
+   </button>
+
+  </div>
+
  </div>
- <div id="reportContent"></div>
- <div class="modal-actions"><button class="btn light" onclick="closeReport()">Close</button><button class="btn primary" onclick="printReport()">Print Report</button></div>
-</div></div>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div id="settingsModal" class="modal">
+
+ <div class="modal-card">
+
+  <h3>Company Settings</h3>
+
+  <div class="grid2">
+
+   <div>
+    <label>Company Name</label>
+    <input id="companyNameInput" class="input">
+   </div>
+
+   <div>
+    <label>System Name</label>
+    <input id="systemNameInput" class="input">
+   </div>
+
+   <div>
+    <label>Currency</label>
+
+    <select id="currencyInput" class="select">
+     <option>PKR</option>
+     <option>USD</option>
+     <option>EUR</option>
+     <option>GBP</option>
+    </select>
+
+   </div>
+
+   <div>
+    <label>Date Format</label>
+
+    <select id="dateFormatInput" class="select">
+     <option>DD/MM/YYYY</option>
+     <option>MM/DD/YYYY</option>
+     <option>YYYY-MM-DD</option>
+    </select>
+
+   </div>
+
+  </div>
+
+
+  <div class="modal-actions">
+
+   <button class="btn light" onclick="closeSettings()">
+    Cancel
+   </button>
+
+   <button class="btn primary" onclick="saveSettings()">
+    Save Settings
+   </button>
+
+  </div>
+
+ </div>
+
+</div>
+
+
+<!-- REPORT -->
+
+<div id="reportModal" class="modal">
+
+ <div class="modal-card">
+
+  <h3>Accounting Reports</h3>
+
+  <div class="tabs">
+
+   <button class="btn light tab active"
+           onclick="reportType='weekly';renderReport()">
+    Weekly
+   </button>
+
+   <button class="btn light tab"
+           onclick="reportType='monthly';renderReport()">
+    Monthly
+   </button>
+
+   <button class="btn light tab"
+           onclick="reportType='vehicle';renderReport()">
+    Vehicle
+   </button>
+
+   <button class="btn light tab"
+           onclick="reportType='customer';renderReport()">
+    Customer
+   </button>
+
+   <button class="btn light tab"
+           onclick="reportType='driver';renderReport()">
+    Driver
+   </button>
+
+   <button class="btn light tab"
+           onclick="reportType='category';renderReport()">
+    Category
+   </button>
+
+  </div>
+
+  <div id="reportContent"></div>
+
+  <div class="modal-actions">
+
+   <button class="btn light" onclick="closeReport()">
+    Close
+   </button>
+
+   <button class="btn primary" onclick="printReport()">
+    Print Report
+   </button>
+
+  </div>
+
+ </div>
+
+</div>
+
 
 <div id="toast" class="toast"></div>
 
+
 <script>
+
+/* ============================================================
+   FIREBASE
+============================================================ */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBvm6sWky8M6lYU0N8fFHLFnV_viJhRBZE",
-  authDomain: "sg-labs-store.firebaseapp.com",
-  databaseURL: "https://sg-labs-store-default-rtdb.firebaseio.com",
-  projectId: "sg-labs-store",
-  storageBucket: "sg-labs-store.firebasestorage.app",
-  messagingSenderId: "84680698655",
-  appId: "1:84680698655:web:17b5f7595b2f317cf55e2a",
-  measurementId: "G-RC7E0RMX4P"
+
+ apiKey:"AIzaSyBvm6sWky8M6lYU0N8fFHLFnV_viJhRBZE",
+
+ authDomain:"sg-labs-store.firebaseapp.com",
+
+ databaseURL:"https://sg-labs-store-default-rtdb.firebaseio.com",
+
+ projectId:"sg-labs-store",
+
+ storageBucket:"sg-labs-store.firebasestorage.app",
+
+ messagingSenderId:"84680698655",
+
+ appId:"1:84680698655:web:17b5f7595b2f317cf55e2a",
+
+ measurementId:"G-RC7E0RMX4P"
+
 };
-/* ---------- Firebase initialization + safe error handling ---------- */
-let app, auth, db;
-try {
-  app = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
-  auth = firebase.auth(); db = firebase.database();
-} catch(e) { showAuthError("Firebase initialization failed: " + friendlyFirebaseError(e)); }
 
-let loginMode = localStorage.getItem("ngToursAccountCreated") === "1";
-let currentUser=null,files={},activeFileId=null,selected={row:0,col:0},rows=60,cols=16,dirty=false;
-let undoStack=[],redoStack=[],cellData={},settings={companyName:"NG Tours & Transport System",systemName:"NG Tours & Transport System",currency:"PKR",dateFormat:"DD/MM/YYYY"};
-let reportType="weekly", pendingFormulaValue=null;
 
-const userRoot=()=>currentUser?"users/"+currentUser.uid:null;
-const filesRoot=()=>currentUser?userRoot()+"/files":null;
+let app;
+let db;
+
+try{
+
+ app=firebase.apps.length
+  ?firebase.app()
+  :firebase.initializeApp(firebaseConfig);
+
+ db=firebase.database();
+
+}catch(e){
+
+ console.error(e);
+
+ alert(
+  "Firebase initialization failed: "+
+  (e.message||e)
+ );
+
+}
+
+
+/* ============================================================
+   GLOBAL VARIABLES
+============================================================ */
+
+let files={};
+
+let activeFileId=null;
+
+let selected={
+ row:0,
+ col:0
+};
+
+let rows=60;
+
+let cols=16;
+
+let dirty=false;
+
+let undoStack=[];
+
+let redoStack=[];
+
+let cellData={};
+
+let settings={
+
+ companyName:"NG Tours & Transport System",
+
+ systemName:"NG Tours & Transport System",
+
+ currency:"PKR",
+
+ dateFormat:"DD/MM/YYYY"
+
+};
+
+let reportType="weekly";
+
+let pendingFormulaValue=null;
+
+
+/*
+  Authentication removed completely.
+
+  A fixed cloud database path is used.
+*/
+
+const DATABASE_ROOT="ngToursSystem";
+
+const filesRoot=()=>DATABASE_ROOT+"/files";
+
+const settingsRoot=()=>DATABASE_ROOT+"/settings";
+
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
 const el=id=>document.getElementById(id);
 
-function friendlyFirebaseError(e){
-  const code=e&&e.code||"";
-  const map={
-    "auth/email-already-in-use":"This email already has an account. Please login instead.",
-    "auth/invalid-email":"Please enter a valid email address.",
-    "auth/weak-password":"Password must be at least 6 characters.",
-    "auth/operation-not-allowed":"Email/Password sign-in is disabled in Firebase Authentication. Enable it in Firebase Console.",
-    "auth/network-request-failed":"Network connection to Firebase failed. Check your internet connection.",
-    "auth/too-many-requests":"Too many attempts. Please wait and try again.",
-    "auth/user-not-found":"No account exists for this email.",
-    "auth/wrong-password":"Incorrect password.",
-    "auth/invalid-credential":"The email or password is incorrect.",
-    "PERMISSION_DENIED":"Firebase Realtime Database denied this operation. Check your Realtime Database rules.",
-    "permission-denied":"Firebase Realtime Database denied this operation. Check your Realtime Database rules."
-  };
-  return map[code]||e.message||String(e);
-}
-function showAuthError(s){if(el("authMsg")){el("authMsg").textContent=s;el("authMsg").className="msg err"}}
-function showToast(s,good=false){const t=el("toast");t.textContent=s;t.style.display="block";t.style.background=good?"#198754":"#17212b";clearTimeout(showToast.t);showToast.t=setTimeout(()=>t.style.display="none",3500)}
-function setStatus(s){el("status").textContent=s}
-function money(n){return Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function colName(n){let s="";n++;while(n){let r=(n-1)%26;s=String.fromCharCode(65+r)+s;n=Math.floor((n-1)/26)}return s}
-function colIndex(s){let n=0;for(const ch of s.toUpperCase())n=n*26+ch.charCodeAt(0)-64;return n-1}
-function cellKey(r,c){return r+"_"+c}
-function getRaw(r,c){return cellData[cellKey(r,c)]?.value??""}
-function setRaw(r,c,v){cellData[cellKey(r,c)]={value:String(v??"")}}
 
-function clearAuthFields(){
-  ["name","email","password","confirmPassword"].forEach(id=>{
-    const x=el(id);
-    if(x) x.value="";
-  });
-  if(el("authMsg")){
-    el("authMsg").textContent="";
-    el("authMsg").className="msg";
+function showToast(message,good=false){
+
+ const t=el("toast");
+
+ t.textContent=message;
+
+ t.style.display="block";
+
+ t.style.background=good
+  ?"#198754"
+  :"#17212b";
+
+ clearTimeout(showToast.timer);
+
+ showToast.timer=setTimeout(()=>{
+
+  t.style.display="none";
+
+ },3500);
+
+}
+
+
+function setStatus(message){
+
+ el("status").textContent=message;
+
+}
+
+
+function money(n){
+
+ return Number(n||0).toLocaleString(
+  undefined,
+  {
+   minimumFractionDigits:2,
+   maximumFractionDigits:2
   }
+ );
+
 }
 
-function setAuthMode(mode){
-  loginMode = mode === "login";
-  el("authTitle").textContent = loginMode ? "Welcome Back" : "NG Tours & Transport System";
-  el("authSubtitle").textContent = loginMode
-    ? "Login to continue"
-    : "Create your account to continue";
 
-  el("nameBox").classList.toggle("hidden", loginMode);
-  el("confirmPassword").classList.toggle("hidden", loginMode);
+function esc(s){
 
-  el("password").setAttribute("autocomplete", loginMode ? "current-password" : "new-password");
-  el("authBtn").textContent = loginMode ? "Login" : "Create Account";
-  el("toggleBtn").textContent = loginMode
-    ? "First time here? Create Account"
-    : "Already have an account? Login";
+ return String(s??"").replace(
+  /[&<>"']/g,
+  m=>({
+   "&":"&amp;",
+   "<":"&lt;",
+   ">":"&gt;",
+   '"':"&quot;",
+   "'":"&#039;"
+  }[m])
+ );
 
-  clearAuthFields();
 }
 
-function toggleAuth(){
-  setAuthMode(loginMode ? "create" : "login");
-}
 
-async function submitAuth(){
-  const email = el("email").value.trim();
-  const password = el("password").value;
-  const msg = el("authMsg");
+function colName(n){
 
-  msg.textContent="";
-  msg.className="msg";
+ let s="";
 
-  try{
-    if(!auth) throw new Error("Firebase is not initialized. Check the Firebase configuration.");
-    if(!email) throw new Error("Please enter your email address.");
-    if(!password) throw new Error("Please enter your password.");
+ n++;
 
-    if(!loginMode){
-      const name = el("name").value.trim();
-      const confirm = el("confirmPassword").value;
+ while(n){
 
-      if(!name) throw new Error("Please enter your full name.");
-      if(password.length < 6) throw new Error("Password must be at least 6 characters.");
-      if(password !== confirm) throw new Error("Passwords do not match.");
+  let r=(n-1)%26;
 
-      // Firebase creates the authentication account first.
-      // A database/profile error is handled separately so it does not falsely
-      // report that account creation failed.
-      const cred = await auth.createUserWithEmailAndPassword(email, password);
-      currentUser = cred.user;
+  s=String.fromCharCode(65+r)+s;
 
-      try{
-        await db.ref("users/" + cred.user.uid + "/profile").set({
-          name: name,
-          email: email,
-          createdAt: firebase.database.ServerValue.TIMESTAMP
-        });
-      }catch(dbErr){
-        console.error("Profile save failed:", dbErr);
-        localStorage.setItem("ngToursAccountCreated","1");
-        setAuthMode("login");
-        showAuthError(
-          "Account was created successfully, but the profile could not be saved. " +
-          friendlyFirebaseError(dbErr)
-        );
-        await auth.signOut();
-        return;
-      }
+  n=Math.floor((n-1)/26);
 
-      // From now on this browser opens the Login page, not Create Account.
-      localStorage.setItem("ngToursAccountCreated","1");
-
-      msg.textContent="Account created successfully. You can now login.";
-      msg.className="msg ok";
-
-      // Do not leave any personal details visible after account creation.
-      clearAuthFields();
-      setAuthMode("login");
-
-      // setAuthMode clears the message, so show a short success message again.
-      el("authMsg").textContent="Account created successfully. Please login.";
-      el("authMsg").className="msg ok";
-      return;
-    }
-
-    // Returning users use Login only.
-    await auth.signInWithEmailAndPassword(email, password);
-
-  }catch(e){
-    console.error("Authentication error:", e);
-    showAuthError(friendlyFirebaseError(e));
-
-    // If Firebase confirms that the email already exists, keep the user
-    // on Login and remember that this browser has an account.
-    if(e && (e.code === "auth/email-already-in-use" || e.code === "auth/user-not-found")){
-      localStorage.setItem("ngToursAccountCreated","1");
-    }
-  }
-}
-
-async function loadProfile(){
- try{
-  const s=await db.ref(userRoot()+"/profile").once("value"),p=s.val()||{};
-  el("userName").textContent=p.name||currentUser.email||"User";
-  el("brandName").textContent=settings.companyName||"NG Tours & Transport System";
- }catch(e){console.warn("Profile read failed",e)}
-}
-if(auth)auth.onAuthStateChanged(async user=>{
- currentUser=user;
-
- if(user){
-  el("authScreen").classList.add("hidden");
-  el("homeScreen").classList.remove("hidden");
-  await loadSettings();
-  await loadProfile();
-  await loadFiles();
-  await refreshDashboard();
- }else{
-  el("homeScreen").classList.add("hidden");
-  el("workspace").style.display="none";
-  el("authScreen").classList.remove("hidden");
-
-  currentUser=null;
-  files={};
-  activeFileId=null;
-
-  // Never show previous user's details on the authentication screen.
-  clearAuthFields();
-
-  // Once an account has been created on this browser, return to Login.
-  setAuthMode(localStorage.getItem("ngToursAccountCreated") === "1" ? "login" : "create");
  }
-});
 
-async function logout(){
-  if(dirty && !confirm("You have unsaved changes. Logout anyway?")) return;
-  try{
-    await auth.signOut();
-    clearAuthFields();
-    setAuthMode("login");
-  }catch(e){
-    showToast(friendlyFirebaseError(e));
-  }
+ return s;
+
 }
-async function loadSettings(){
- try{const s=await db.ref(userRoot()+"/settings").once("value");settings={...settings,...(s.val()||{})}}catch(e){console.warn(e)}
- el("companyNameInput").value=settings.companyName;el("systemNameInput").value=settings.systemName;el("currencyInput").value=settings.currency;el("dateFormatInput").value=settings.dateFormat;
+
+
+function colIndex(s){
+
+ let n=0;
+
+ for(const ch of s.toUpperCase()){
+
+  n=n*26+ch.charCodeAt(0)-64;
+
+ }
+
+ return n-1;
+
 }
-async function loadFiles(){
- try{const s=await db.ref(filesRoot()).once("value");files=s.val()||{};renderFiles()}catch(e){showToast("Could not load files: "+friendlyFirebaseError(e))}
+
+
+function cellKey(r,c){
+
+ return r+"_"+c;
+
 }
-function renderFiles(){
- const list=el("fileList"),ids=Object.keys(files);
- if(!ids.length){list.innerHTML='<div class="empty">No accounting files yet.<br>Create your first file.</div>';return}
- list.innerHTML="";
- ids.sort((a,b)=>(files[b].updatedAt||0)-(files[a].updatedAt||0)).forEach(id=>{
-  const f=files[id]||{},card=document.createElement("div");card.className="file-card";
-  card.innerHTML=`<div style="font-size:28px">📊</div><div class="file-name">${esc(f.name||"Untitled")}</div><div class="file-date">${f.updatedAt?new Date(f.updatedAt).toLocaleString():""}</div><div class="actions">
-  <button class="btn primary" onclick="openFile('${id}')">Open</button><button class="btn light" onclick="renameFile('${id}')">Rename</button><button class="btn danger" onclick="deleteFile('${id}')">Delete</button></div>`;
-  list.appendChild(card);
- });
+
+
+function getRaw(r,c){
+
+ return cellData[cellKey(r,c)]?.value??"";
+
 }
-function openNewFile(){el("newFileName").value="";el("newFileModal").style.display="flex";setTimeout(()=>el("newFileName").focus(),50)}
-function closeNewFile(){el("newFileModal").style.display="none"}
+
+
+function setRaw(r,c,v){
+
+ cellData[cellKey(r,c)]={
+
+  value:String(v??"")
+
+ };
+
+}
+
+
+/* ============================================================
+   HOME / FILES
+============================================================ */
+
+function openNewFile(){
+
+ el("newFileName").value="";
+
+ el("newFileModal").style.display="flex";
+
+ setTimeout(()=>el("newFileName").focus(),100);
+
+}
+
+
+function closeNewFile(){
+
+ el("newFileModal").style.display="none";
+
+}
+
+
 async function createFile(){
- const name=el("newFileName").value.trim();if(!name)return showToast("Please enter a file name.");
- try{
-  const id=db.ref(filesRoot()).push().key;
-  const data={name,rows:60,cols:16,cells:{},createdAt:firebase.database.ServerValue.TIMESTAMP,updatedAt:firebase.database.ServerValue.TIMESTAMP};
-  await db.ref(filesRoot()+"/"+id).set(data);closeNewFile();await loadFiles();openFile(id);
- }catch(e){showToast("Create file failed: "+friendlyFirebaseError(e))}
-}
-async function renameFile(id){
- const old=files[id]?.name||"";const name=prompt("New file name:",old);if(!name||name.trim()===old)return;
- try{await db.ref(filesRoot()+"/"+id).update({name:name.trim(),updatedAt:firebase.database.ServerValue.TIMESTAMP});await loadFiles()}catch(e){showToast(friendlyFirebaseError(e))}
-}
-async function deleteFile(id){
- if(!confirm("Delete this accounting file permanently?"))return;
- try{await db.ref(filesRoot()+"/"+id).remove();await loadFiles();await refreshDashboard()}catch(e){showToast(friendlyFirebaseError(e))}
-}
-function openFile(id){
- activeFileId=id;const f=files[id]||{};rows=f.rows||60;cols=f.cols||16;
- el("activeFileName").textContent=f.name||"Spreadsheet";el("workspace").style.display="flex";selected={row:0,col:0};dirty=false;undoStack=[];redoStack=[];
- cellData=deserializeCells(f.cells||{});renderSheet();setStatus("Loaded");updateSummary();
-}
-function exitSpreadsheet(){if(dirty&&!confirm("You have unsaved changes. Exit anyway?"))return;el("workspace").style.display="none";activeFileId=null}
-function deserializeCells(saved){const out={};Object.entries(saved||{}).forEach(([k,v])=>{out[k]={value:v.value??v.html??"",style:v.style||{}}});return out}
-function renderSheet(){
- const head=el("head"),body=el("body");head.innerHTML="<tr><th class='rowhead'>#</th>"+Array.from({length:cols},(_,c)=>`<th>${colName(c)}</th>`).join("")+"</tr>";body.innerHTML="";
- for(let r=0;r<rows;r++){const tr=document.createElement("tr"),rh=document.createElement("td");rh.className="rowhead";rh.textContent=r+1;tr.appendChild(rh);
-  for(let c=0;c<cols;c++){const td=document.createElement("td");td.className="cell";td.contentEditable="true";td.dataset.row=r;td.dataset.col=c;td.textContent=evaluateCell(r,c,new Set());
-   td.addEventListener("focus",()=>selectCell(td));td.addEventListener("click",()=>selectCell(td));
-   td.addEventListener("input",()=>{snapshot();setRaw(r,c,td.innerText);markDirty();updateSummary()});tr.appendChild(td)}
-  body.appendChild(tr)
+
+ const name=el("newFileName").value.trim();
+
+ if(!name){
+
+  showToast("Please enter a file name.");
+
+  return;
+
  }
- selectCell(body.querySelector(".cell"));updateFormulaBar();
-}
-function snapshot(){undoStack.push(JSON.stringify({rows,cols,cellData}));if(undoStack.length>50)undoStack.shift();redoStack=[]}
-function restoreSnapshot(s){const o=JSON.parse(s);rows=o.rows;cols=o.cols;cellData=o.cellData;renderSheet();markDirty()}
-function undo(){if(!undoStack.length)return;redoStack.push(JSON.stringify({rows,cols,cellData}));restoreSnapshot(undoStack.pop())}
-function redo(){if(!redoStack.length)return;undoStack.push(JSON.stringify({rows,cols,cellData}));restoreSnapshot(redoStack.pop())}
-function markDirty(){dirty=true;el("unsaved").style.display="inline"}
-function selectCell(td){document.querySelectorAll(".cell.selected").forEach(x=>x.classList.remove("selected"));if(!td)return;td.classList.add("selected");selected={row:+td.dataset.row,col:+td.dataset.col};el("cellName").textContent=colName(selected.col)+(selected.row+1);updateFormulaBar()}
-function currentCell(){return document.querySelector(`.cell[data-row="${selected.row}"][data-col="${selected.col}"]`)}
-function updateFormulaBar(){const td=currentCell();if(td)el("formulaBar").value=getRaw(selected.row,selected.col)}
-function formulaChanged(){pendingFormulaValue=el("formulaBar").value}
-function formulaKey(e){
- if(e.key==="Enter"){e.preventDefault();snapshot();setRaw(selected.row,selected.col,el("formulaBar").value);renderSheet();markDirty();moveSelection(1,0)}
-}
-function moveSelection(dr,dc){const r=Math.max(0,Math.min(rows-1,selected.row+dr)),c=Math.max(0,Math.min(cols-1,selected.col+dc));selectCell(document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`))}
-function format(cmd){document.execCommand(cmd,false,null);markDirty()}
-function align(v){document.execCommand("justify"+v[0].toUpperCase()+v.slice(1),false,null);markDirty()}
-function clearCell(){snapshot();setRaw(selected.row,selected.col,"");renderSheet();markDirty()}
-function addRow(){snapshot();rows++;renderSheet();markDirty()}
-function addColumn(){snapshot();cols++;renderSheet();markDirty()}
-function deleteRow(){if(rows>1){snapshot();rows--;renderSheet();markDirty()}}
-function deleteColumn(){if(cols>1){snapshot();cols--;renderSheet();markDirty()}}
-function collectCells(){return cellData}
-async function saveCurrentFile(){
- if(!activeFileId||!currentUser)return;
- try{await db.ref(filesRoot()+"/"+activeFileId).update({rows,cols,cells:collectCells(),updatedAt:firebase.database.ServerValue.TIMESTAMP});
-  dirty=false;el("unsaved").style.display="none";setStatus("Saved to Firebase");await loadFiles();await refreshDashboard();
- }catch(e){setStatus("Save failed");showToast("Save failed: "+friendlyFirebaseError(e))}
-}
 
-/* ---------- Formula engine: common Excel-style functions ---------- */
-function rangeValues(ref){
- const m=ref.trim().match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i);if(!m)return [valueFromRef(ref)];
- const c1=colIndex(m[1]),r1=+m[2]-1,c2=colIndex(m[3]),r2=+m[4]-1,a=[];
- for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)for(let c=Math.min(c1,c2);c<=Math.max(c1,c2);c++)a.push(valueFromRef(colName(c)+(r+1)));
- return a;
-}
-function valueFromRef(ref,seen=new Set()){const m=ref.trim().match(/^([A-Z]+)(\d+)$/i);if(!m)return isNaN(Number(ref))?ref:Number(ref);const k=cellKey(+m[2]-1,colIndex(m[1]));const raw=getRaw(+m[2]-1,colIndex(m[1]));if(raw.startsWith("="))return evaluateFormula(raw,seen);return raw!==""&&!isNaN(Number(raw))?Number(raw):raw}
-function flatArgs(s){let out=[],cur="",depth=0;for(const ch of s){if(ch==="(")depth++;if(ch===")")depth--;if(ch===","&&depth===0){out.push(cur);cur="";}else cur+=ch}if(cur)out.push(cur);return out}
-function numeric(v){const n=Number(v);return isNaN(n)?0:n}
-function evaluateCell(r,c,seen=new Set()){const raw=getRaw(r,c);if(!raw)return "";if(raw.startsWith("="))return evaluateFormula(raw,seen);return raw}
-function evaluateFormula(formula,seen=new Set()){
- let f=formula.trim().replace(/^=/,""), refs=[...f.matchAll(/\b[A-Z]{1,3}\d+(?::[A-Z]{1,3}\d+)?\b/gi)].map(x=>x[0].toUpperCase());
- for(const ref of refs){const vals=ref.includes(":")?rangeValues(ref):[valueFromRef(ref,seen)];const replacement=vals.length===1?JSON.stringify(vals[0]):JSON.stringify(vals);f=f.replace(new RegExp("\\b"+ref.replace(":","\\:")+"\\b","gi"),JSON.stringify(vals.length===1?vals[0]:vals))}
- try{
-  const m=f.match(/^([A-Z]+)\((.*)\)$/i);
-  if(m){const fn=m[1].toUpperCase(),args=flatArgs(m[2]);const vals=args.flatMap(a=>{a=a.trim();if(a.startsWith('"'))return [a.slice(1,-1)];if(/^[A-Z]+\d+:[A-Z]+\d+$/i.test(a))return rangeValues(a);if(/^[A-Z]+\d+$/i.test(a))return [valueFromRef(a)];return [Number(a)]});
-   switch(fn){
-    case"SUM":return vals.reduce((a,v)=>a+numeric(v),0);case"AVERAGE":return vals.length?vals.reduce((a,v)=>a+numeric(v),0)/vals.length:0;case"MIN":return Math.min(...vals.map(numeric));case"MAX":return Math.max(...vals.map(numeric));case"COUNT":return vals.filter(v=>v!==""&&!isNaN(Number(v))).length;case"COUNTA":return vals.filter(v=>v!=="").length;
-    case"ABS":return Math.abs(numeric(vals[0]));case"MOD":return numeric(vals[0])%numeric(vals[1]);case"POWER":return Math.pow(numeric(vals[0]),numeric(vals[1]));case"SQRT":return Math.sqrt(numeric(vals[0]));
-    case"ROUND":return Number(numeric(vals[0]).toFixed(numeric(vals[1])));case"ROUNDUP":return Math.ceil(numeric(vals[0])*10**numeric(vals[1]))/10**numeric(vals[1]);case"ROUNDDOWN":return Math.floor(numeric(vals[0])*10**numeric(vals[1]))/10**numeric(vals[1]);
-    case"AND":return vals.every(Boolean);case"OR":return vals.some(Boolean);case"NOT":return !vals[0];case"IF":return vals[0]?vals[1]:vals[2];case"IFERROR":return vals[0];
-    case"CONCAT":return vals.join("");case"LEFT":return String(vals[0]??"").slice(0,numeric(vals[1])||1);case"RIGHT":return String(vals[0]??"").slice(-(numeric(vals[1])||1));case"MID":return String(vals[0]??"").substr(numeric(vals[1])-1,numeric(vals[2]));
-    case"LEN":return String(vals[0]??"").length;case"TRIM":return String(vals[0]??"").trim().replace(/\s+/g," ");case"UPPER":return String(vals[0]??"").toUpperCase();case"LOWER":return String(vals[0]??"").toLowerCase();case"PROPER":return String(vals[0]??"").toLowerCase().replace(/\b\w/g,x=>x.toUpperCase());
-    case"TODAY":return new Date().toISOString().slice(0,10);case"NOW":return new Date().toLocaleString();case"DATE":return new Date(numeric(vals[0]),numeric(vals[1])-1,numeric(vals[2])).toISOString().slice(0,10);
-    case"DAY":return new Date(vals[0]).getDate();case"MONTH":return new Date(vals[0]).getMonth()+1;case"YEAR":return new Date(vals[0]).getFullYear();case"WEEKDAY":return new Date(vals[0]).getDay()+1;
-    case"SUMIF":{const rr=rangeValues(args[0]),crit=args[1].replace(/^"|"$/g,""),sr=rangeValues(args[2]||args[0]);return rr.reduce((s,v,i)=>String(v)==crit?s+numeric(sr[i]):s,0)}
-    case"COUNTIF":{const rr=rangeValues(args[0]),crit=args[1].replace(/^"|"$/g,"");return rr.filter(v=>String(v)==crit).length}
-    case"SUMIFS":{const sumr=rangeValues(args[0]);let total=0;for(let i=1;i<args.length;i+=2){const cr=rangeValues(args[i]),cv=args[i+1].replace(/^"|"$/g,"");for(let j=0;j<sumr.length;j++)if(String(cr[j])==cv)total+=numeric(sumr[j]);}return total}
-   }
-  }
-  f=f.replace(/"([^"]*)"/g,"`$1`");return Function('"use strict";return ('+f+')')()
- }catch(e){return "#ERROR!"}
-}
-function updateVisibleValues(){document.querySelectorAll(".cell").forEach(td=>{td.textContent=evaluateCell(+td.dataset.row,+td.dataset.col,new Set());td.classList.toggle("formula-error",td.textContent==="#ERROR!")})}
-function insertAccountingTemplate(){
- snapshot();const headers=["Date","Day","Description","Category","Customer","Vehicle","Driver","Trip","Income","Expense","Payment Method","Cash","Bank","Pending Amount","Balance","Notes"];
- headers.forEach((h,c)=>setRaw(0,c,h));for(let r=1;r<6;r++){setRaw(r,0,"");setRaw(r,1,"Day "+r);setRaw(r,14,`=I${r+1}-J${r+1}`)}renderSheet();markDirty()
-}
-function insertTransportTemplate(){
- snapshot();const headers=["Rental Date","Return Date","Vehicle ID","Vehicle Type","Customer","Driver","Trip Details","Pickup","Drop-off","Rental Days","Daily Rate","Total Rent","Customer Payment","Pending Payment","Fuel Expense","Toll Expense","Driver Expense","Maintenance","Other Expense","Total Expense","Net Amount"];
- if(cols<headers.length)cols=headers.length;headers.forEach((h,c)=>setRaw(0,c,h));for(let r=1;r<6;r++){setRaw(r,9,`=B${r+1}-A${r+1}`);setRaw(r,11,`=J${r+1}*K${r+1}`);setRaw(r,13,`=L${r+1}-M${r+1}`);setRaw(r,19,`=SUM(O${r+1}:S${r+1})`);setRaw(r,20,`=L${r+1}-T${r+1}`)}renderSheet();markDirty()
-}
+ if(!db){
 
-/* ---------- Search / find / replace ---------- */
-function findReplace(){
- const find=prompt("Find text:");if(find===null)return;const repl=prompt("Replace with:","");if(repl===null)return;snapshot();
- Object.keys(cellData).forEach(k=>{if(String(cellData[k].value).includes(find))cellData[k].value=String(cellData[k].value).split(find).join(repl)});renderSheet();markDirty();showToast("Find/Replace completed.",true)
-}
+  showToast("Firebase database is not available.");
 
-/* ---------- Reports & automatic weekly/monthly summaries ---------- */
-function rowsAsObjects(){
- const out=[],header=[];for(let c=0;c<cols;c++)header.push(String(getRaw(0,c)||"").trim()||colName(c));
- for(let r=1;r<rows;r++){const o={};let any=false;for(let c=0;c<cols;c++){const v=evaluateCell(r,c,new Set());if(v!=="")any=true;o[header[c]]=v}if(any)out.push(o)}return out
-}
-function pick(o,names){for(const n of names){const k=Object.keys(o).find(x=>x.toLowerCase().replace(/\s/g,"")==n.toLowerCase().replace(/\s/g,""));if(k)return numeric(o[k])}return 0}
-function groupReport(keyNames){
- const groups={};rowsAsObjects().forEach(o=>{let key="Other";for(const n of keyNames){const k=Object.keys(o).find(x=>x.toLowerCase().includes(n));if(k&&o[k]){key=o[k];break}}if(!groups[key])groups[key]={income:0,expense:0,pending:0,count:0};groups[key].income+=pick(o,["Income","Total Rent","Customer Payment"]);groups[key].expense+=pick(o,["Expense","Total Expense","Fuel Expense","Maintenance Expense"]);groups[key].pending+=pick(o,["Pending Amount","Pending Payment"]);groups[key].count++});return groups
-}
-function renderReport(){
- const rowsd=rowsAsObjects(),groups=reportType==="vehicle"?groupReport(["vehicle"]):reportType==="customer"?groupReport(["customer"]):reportType==="driver"?groupReport(["driver"]):reportType==="category"?groupReport(["category"]):null;
- let html="";
- if(groups){html="<table class='report-table'><tr><th>Group</th><th>Entries</th><th>Income</th><th>Expense</th><th>Net</th><th>Pending</th></tr>"+Object.entries(groups).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.count}</td><td>${money(v.income)}</td><td>${money(v.expense)}</td><td>${money(v.income-v.expense)}</td><td>${money(v.pending)}</td></tr>`).join("")+"</table>"}
- else{const income=rowsd.reduce((s,o)=>s+pick(o,["Income","Total Rent","Customer Payment"]),0),expense=rowsd.reduce((s,o)=>s+pick(o,["Expense","Total Expense"]),0),pending=rowsd.reduce((s,o)=>s+pick(o,["Pending Amount","Pending Payment"]),0);
-  html=`<div class='panel'><b>${reportType==="monthly"?"Monthly":"Weekly"} Summary</b><div class='stats' style='margin-top:10px'><div class='stat'><small>Income</small><strong>${money(income)}</strong></div><div class='stat'><small>Expense</small><strong>${money(expense)}</strong></div><div class='stat'><small>Net</small><strong>${money(income-expense)}</strong></div><div class='stat'><small>Pending</small><strong>${money(pending)}</strong></div></div></div>`;
-  html+="<table class='report-table'><tr><th>#</th><th>Date</th><th>Description</th><th>Income</th><th>Expense</th><th>Net</th></tr>"+rowsd.slice(0,200).map((o,i)=>{const inc=pick(o,["Income","Total Rent","Customer Payment"]),ex=pick(o,["Expense","Total Expense"]);return `<tr><td>${i+1}</td><td>${esc(o.Date||o["Rental Date"]||"")}</td><td>${esc(o.Description||o["Trip Details"]||"")}</td><td>${money(inc)}</td><td>${money(ex)}</td><td>${money(inc-ex)}</td></tr>`}).join("")+"</table>"
+  return;
+
  }
- el("reportContent").innerHTML=html
-}
-function openReport(){el("reportModal").style.display="flex";renderReport()}
-function closeReport(){el("reportModal").style.display="none"}
-function printReport(){const w=window.open("","_blank");w.document.write("<html><head><title>NG Tours Report</title></head><body>"+el("reportContent").innerHTML+"</body></html>");w.document.close();w.print()}
 
-/* ---------- Dashboard, export and settings ---------- */
-async function refreshDashboard(){
- let income=0,expense=0,pending=0,cash=0,bank=0;
- Object.values(files||{}).forEach(f=>Object.values(f.cells||{}).forEach(v=>{const raw=v?.value??v?.html??"";const x=String(raw);}));
- // Aggregate common labelled columns from saved rows without changing the sheet.
- Object.values(files||{}).forEach(f=>{
-  const saved=deserializeCells(f.cells||{}), maxc=f.cols||16,maxr=f.rows||60,heads=[];
-  for(let c=0;c<maxc;c++)heads[c]=String(saved[cellKey(0,c)]?.value||"").toLowerCase();
-  for(let r=1;r<maxr;r++){const vals=[];for(let c=0;c<maxc;c++)vals[c]=saved[cellKey(r,c)]?.value||"";heads.forEach((h,c)=>{const n=numeric(vals[c]);if(h==="income"||h==="total rent")income+=n;if(h==="expense"||h==="total expense")expense+=n;if(h.includes("pending"))pending+=n;if(h==="cash")cash+=n;if(h==="bank")bank+=n})}
+ const id="file_"+Date.now();
+
+ const file={
+
+  id:id,
+
+  name:name,
+
+  createdAt:Date.now(),
+
+  updatedAt:Date.now(),
+
+  rows:60,
+
+  cols:16,
+
+  data:{}
+
+ };
+
+ try{
+
+  await db.ref(filesRoot()+"/"+id).set(file);
+
+  closeNewFile();
+
+  showToast("File created successfully.",true);
+
+  await loadFiles();
+
+ }catch(e){
+
+  console.error(e);
+
+  showToast("Could not create file: "+e.message);
+
+ }
+
+}
+
+
+async function loadFiles(){
+
+ if(!db)return;
+
+ try{
+
+  const snap=await db.ref(filesRoot()).once("value");
+
+  files=snap.val()||{};
+
+  renderFiles();
+
+  calculateDashboard();
+
+ }catch(e){
+
+  console.error(e);
+
+  showToast("Could not load accounting files: "+e.message);
+
+ }
+
+}
+
+
+function renderFiles(){
+
+ const box=el("fileList");
+
+ box.innerHTML="";
+
+ const arr=Object.values(files||{}).sort(
+  (a,b)=>(b.updatedAt||0)-(a.updatedAt||0)
+ );
+
+ if(!arr.length){
+
+  box.innerHTML=`
+   <div class="empty">
+    <h3>No Accounting Files</h3>
+    <p>Create your first cloud accounting file.</p>
+    <button class="btn primary" onclick="openNewFile()">
+     + Create Accounting File
+    </button>
+   </div>
+  `;
+
+  return;
+
+ }
+
+ arr.forEach(file=>{
+
+  const card=document.createElement("div");
+
+  card.className="file-card";
+
+  card.innerHTML=`
+
+   <div class="file-name">
+    ${esc(file.name||"Untitled")}
+   </div>
+
+   <div class="file-date">
+    Created:
+    ${formatDateTime(file.createdAt)}
+   </div>
+
+   <div class="file-date">
+    Updated:
+    ${formatDateTime(file.updatedAt)}
+   </div>
+
+   <div class="actions">
+
+    <button class="btn primary"
+            onclick="openFile('${file.id}')">
+     Open
+    </button>
+
+    <button class="btn light"
+            onclick="renameFile('${file.id}')">
+     Rename
+    </button>
+
+    <button class="btn danger"
+            onclick="deleteFile('${file.id}')">
+     Delete
+    </button>
+
+   </div>
+  `;
+
+  box.appendChild(card);
+
  });
- el("dashIncome").textContent=money(income);el("dashExpense").textContent=money(expense);el("dashNet").textContent=money(income-expense);el("dashCash").textContent=money(cash);el("dashBank").textContent=money(bank);el("dashPending").textContent=money(pending)
-}
-function exportCSV(){
- const lines=[];for(let r=0;r<rows;r++){const vals=[];for(let c=0;c<cols;c++)vals.push('"'+String(evaluateCell(r,c,new Set())).replaceAll('"','""')+'"');lines.push(vals.join(","))}
- const blob=new Blob([lines.join("\n")],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(files[activeFileId]?.name||"accounting")+".csv";a.click();URL.revokeObjectURL(a.href)
-}
-function exportExcel(){
- const data=[];for(let r=0;r<rows;r++){const row=[];for(let c=0;c<cols;c++)row.push(evaluateCell(r,c,new Set()));data.push(row)}
- const wb=XLSX.utils.book_new(),ws=XLSX.utils.aoa_to_sheet(data);XLSX.utils.book_append_sheet(wb,ws,"Accounting");XLSX.writeFile(wb,(files[activeFileId]?.name||"accounting")+".xlsx")
-}
-function openSettings(){el("companyNameInput").value=settings.companyName;el("systemNameInput").value=settings.systemName;el("currencyInput").value=settings.currency;el("dateFormatInput").value=settings.dateFormat;el("settingsModal").style.display="flex"}
-function closeSettings(){el("settingsModal").style.display="none"}
-async function saveSettings(){
- settings={companyName:el("companyNameInput").value.trim()||"NG Tours & Transport System",systemName:el("systemNameInput").value.trim()||"NG Tours & Transport System",currency:el("currencyInput").value,dateFormat:el("dateFormatInput").value};
- try{await db.ref(userRoot()+"/settings").set({...settings,updatedAt:firebase.database.ServerValue.TIMESTAMP});el("brandName").textContent=settings.companyName;closeSettings();showToast("Settings saved to Firebase.",true)}catch(e){showToast("Settings save failed: "+friendlyFirebaseError(e))}
+
 }
 
-/* ---------- Keyboard shortcuts ---------- */
-document.addEventListener("keydown",e=>{
- const k=e.key.toLowerCase();
- if((e.ctrlKey||e.metaKey)&&k==="s"&&activeFileId){e.preventDefault();saveCurrentFile()}
- if((e.ctrlKey||e.metaKey)&&k==="z"&&activeFileId){e.preventDefault();undo()}
- if((e.ctrlKey||e.metaKey)&&k==="y"&&activeFileId){e.preventDefault();redo()}
- if((e.ctrlKey||e.metaKey)&&k==="f"&&activeFileId){e.preventDefault();findReplace()}
- if(e.key==="F2"&&activeFileId){e.preventDefault();const td=currentCell();if(td){td.focus();document.execCommand("selectAll",false,null)}}
- if(e.key==="Escape"&&el("workspace").style.display==="flex")document.activeElement?.blur();
- if(e.key==="Enter"&&document.activeElement?.classList?.contains("cell"))moveSelection(1,0);
- if(e.key==="Tab"&&document.activeElement?.classList?.contains("cell")){e.preventDefault();moveSelection(0,e.shiftKey?-1:1)}
- if(e.key==="Delete"&&activeFileId&&document.activeElement?.classList?.contains("cell"))clearCell();
-});
-document.addEventListener("paste",e=>{if(activeFileId&&document.activeElement?.classList?.contains("cell")){setTimeout(()=>{snapshot();setRaw(selected.row,selected.col,document.activeElement.innerText);markDirty();updateSummary()},0)}})
-function updateSummary(){updateVisibleValues()}
+
+function formatDateTime(timestamp){
+
+ if(!timestamp)return "-";
+
+ return new Date(timestamp).toLocaleString();
+
+}
+
+
+async function renameFile(id){
+
+ const file=files[id];
+
+ if(!file)return;
+
+ const newName=prompt(
+  "Enter new file name:",
+  file.name
+ );
+
+ if(!newName||!newName.trim())return;
+
+ try{
+
+  await db.ref(filesRoot()+"/"+id+"/name")
+   .set(newName.trim());
+
+  await db.ref(filesRoot()+"/"+id+"/updatedAt")
+   .set(Date.now());
+
+  await loadFiles();
+
+  showToast("File renamed.",true);
+
+ }catch(e){
+
+  showToast("Rename failed: "+e.message);
+
+ }
+
+}
+
+
+async function deleteFile(id){
+
+ const file=files[id];
+
+ if(!file)return;
+
+ if(!confirm(
+  `Delete "${file.name}" permanently?`
+ ))return;
+
+ try{
+
+  await db.ref(filesRoot()+"/"+id).remove();
+
+  await loadFiles();
+
+  showToast("File deleted.",true);
+
+ }catch(e){
+
+  showToast("Delete failed: "+e.message);
+
+ }
+
+}
+
+
+/* ============================================================
+   OPEN SPREADSHEET
+============================================================ */
+
+async function openFile(id){
+
+ if(!files[id])return;
+
+ activeFileId=id;
+
+ const file=files[id];
+
+ rows=Number(file.rows||60);
+
+ cols=Number(file.cols||16);
+
+ cellData=file.data||{};
+
+ undoStack=[];
+
+ redoStack=[];
+
+ dirty=false;
+
+ el("activeFileName").textContent=file.name;
+
+ el("unsaved").style.display="none";
+
+ el("workspace").style.display="flex";
+
+ selected={row:0,col:0};
+
+ renderSheet();
+
+ selectCell(0,0);
+
+ setStatus("File opened.");
+
+}
+
+
+function exitSpreadsheet(){
+
+ if(dirty){
+
+  const leave=confirm(
+   "You have unsaved changes. Exit anyway?"
+  );
+
+  if(!leave)return;
+
+ }
+
+ el("workspace").style.display="none";
+
+ activeFileId=null;
+
+ loadFiles();
+
+}
+
+
+async function saveCurrentFile(){
+
+ if(!activeFileId){
+
+  showToast("No file is open.");
+
+  return;
+
+ }
+
+ try{
+
+  await db.ref(
+   filesRoot()+"/"+activeFileId
+  ).update({
+
+   rows:rows,
+
+   cols:cols,
+
+   data:cellData,
+
+   updatedAt:Date.now()
+
+  });
+
+  dirty=false;
+
+  el("unsaved").style.display="none";
+
+  files[activeFileId]={
+   ...files[activeFileId],
+   rows,
+   cols,
+   data:cellData,
+   updatedAt:Date.now()
+  };
+
+  setStatus("Saved to Firebase.");
+
+  showToast("Saved successfully to Firebase.",true);
+
+  calculateDashboard();
+
+ }catch(e){
+
+  console.error(e);
+
+  showToast("Save failed: "+e.message);
+
+ }
+
+}
+
+
+/* ============================================================
+   SHEET
+============================================================ */
+
+function renderSheet(){
+
+ const head=el("head");
+
+ const body=el("body");
+
+ head.innerHTML="";
+
+ body.innerHTML="";
+
+
+ const tr=document.createElement("tr");
+
+ const corner=document.createElement("th");
+
+ corner.className="rowhead";
+
+ corner.textContent="#";
+
+ tr.appendChild(corner);
+
+
+ for(let c=0;c<cols;c++){
+
+  const th=document.createElement("th");
+
+  th.textContent=colName(c);
+
+  tr.appendChild(th);
+
+ }
+
+ head.appendChild(tr);
+
+
+ for(let r=0;r<rows;r++){
+
+  const row=document.createElement("tr");
+
+  const rh=document.createElement("td");
+
+  rh.className="rowhead";
+
+  rh.textContent=r+1;
+
+  row.appendChild(rh);
+
+
+  for(let c=0;c<cols;c++){
+
+   const td=document.createElement("td");
+
+   td.className="cell";
+
+   td.contentEditable="true";
+
+   td.dataset.row=r;
+
+   td.dataset.col=c;
+
+   td.spellcheck=false;
+
+   td.textContent=evaluateCell(r,c);
+
+   td.addEventListener("click",()=>{
+
+    selectCell(r,c);
+
+   });
+
+   td.addEventListener("focus",()=>{
+
+    selectCell(r,c);
+
+   });
+
+   td.addEventListener("input",()=>{
+
+    const value=td.innerText;
+
+    updateCell(r,c,value);
+
+   });
+
+   td.addEventListener("keydown",sheetKeydown);
+
+   row.appendChild(td);
+
+  }
+
+  body.appendChild(row);
+
+ }
+
+}
+
+
+function selectCell(r,c){
+
+ selected={row:r,col:c};
+
+ document.querySelectorAll(".cell.selected")
+  .forEach(x=>x.classList.remove("selected"));
+
+ const cell=document.querySelector(
+  `.cell[data-row="${r}"][data-col="${c}"]`
+ );
+
+ if(cell)cell.classList.add("selected");
+
+ el("cellName").textContent=
+  colName(c)+(r+1);
+
+ el("formulaBar").value=getRaw(r,c);
+
+}
+
+
+function updateCell(r,c,value,record=true){
+
+ if(record){
+
+  undoStack.push(JSON.stringify(cellData));
+
+  if(undoStack.length>50)
+   undoStack.shift();
+
+  redoStack=[];
+
+ }
+
+ setRaw(r,c,value);
+
+ dirty=true;
+
+ el("unsaved").style.display="inline";
+
+ setStatus("Unsaved changes");
+
+ updateVisibleCell(r,c);
+
+}
+
+
+function updateVisibleCell(r,c){
+
+ const cell=document.querySelector(
+  `.cell[data-row="${r}"][data-col="${c}"]`
+ );
+
+ if(!cell)return;
+
+ cell.textContent=evaluateCell(r,c);
+
+}
+
+
+function evaluateCell(r,c,stack=[]){
+
+ let raw=getRaw(r,c);
+
+ if(raw==="")return "";
+
+ if(typeof raw!=="string")raw=String(raw);
+
+ if(!raw.startsWith("="))return raw;
+
+ if(stack.includes(cellKey(r,c)))
+  return "#CIRC!";
+
+ try{
+
+  let expr=raw.substring(1).trim();
+
+  expr=expr.replace(
+   /\b([A-Z]{1,3})(\d+)\b/g,
+   (match,col,row)=>{
+
+    const rr=Number(row)-1;
+
+    const cc=colIndex(col);
+
+    const value=evaluateCell(
+     rr,
+     cc,
+     [...stack,cellKey(r,c)]
+    );
+
+    if(value===""||isNaN(Number(value)))
+     return "0";
+
+    return Number(value);
+
+   }
+  );
+
+  if(
+   !/^[0-9+\-*/().%\s]+$/.test(expr)
+  ){
+
+   return "#ERROR!";
+
+  }
+
+  const result=Function(
+   '"use strict";return ('+expr+')'
+  )();
+
+  if(typeof result==="number"&&isFinite(result))
+   return String(Math.round(result*100000)/100000);
+
+  return "#ERROR!";
+
+ }catch(e){
+
+  return "#ERROR!";
+
+ }
+
+}
+
+
+function formulaChanged(){
+
+ pendingFormulaValue=el("formulaBar").value;
+
+}
+
+
+function formulaKey(event){
+
+ if(event.key==="Enter"){
+
+  event.preventDefault();
+
+  updateCell(
+   selected.row,
+   selected.col,
+   el("formulaBar").value
+  );
+
+  renderSheet();
+
+  selectCell(selected.row,selected.col);
+
+ }
+
+}
+
+
+function sheetKeydown(event){
+
+ const r=Number(event.currentTarget.dataset.row);
+
+ const c=Number(event.currentTarget.dataset.col);
+
+
+ if(event.key==="Enter"){
+
+  event.preventDefault();
+
+  event.currentTarget.blur();
+
+  if(r+1<rows)
+   selectCell(r+1,c);
+
+ }
+
+ if(event.key==="Tab"){
+
+  event.preventDefault();
+
+  event.currentTarget.blur();
+
+  if(c+1<cols)
+   selectCell(r,c+1);
+
+ }
+
+ if(event.key==="F2"){
+
+  event.preventDefault();
+
+  event.currentTarget.focus();
+
+ }
+
+}
+
+
+function clearCell(){
+
+ updateCell(
+  selected.row,
+  selected.col,
+  ""
+ );
+
+ renderSheet();
+
+ selectCell(selected.row,selected.col);
+
+}
+
+
+function addRow(){
+
+ undoStack.push(JSON.stringify(cellData));
+
+ rows++;
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(
+  Math.min(selected.row,rows-1),
+  selected.col
+ );
+
+ markUnsaved();
+
+}
+
+
+function addColumn(){
+
+ undoStack.push(JSON.stringify(cellData));
+
+ cols++;
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(
+  selected.row,
+  Math.min(selected.col,cols-1)
+ );
+
+ markUnsaved();
+
+}
+
+
+function deleteRow(){
+
+ if(rows<=1)return;
+
+ const r=selected.row;
+
+ undoStack.push(JSON.stringify(cellData));
+
+ const newData={};
+
+ Object.entries(cellData).forEach(
+  ([key,value])=>{
+
+   const [rr,cc]=key.split("_").map(Number);
+
+   if(rr===r)return;
+
+   const nr=rr>r?rr-1:rr;
+
+   newData[cellKey(nr,cc)]=value;
+
+  }
+ );
+
+ cellData=newData;
+
+ rows--;
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(
+  Math.min(r,rows-1),
+  selected.col
+ );
+
+ markUnsaved();
+
+}
+
+
+function deleteColumn(){
+
+ if(cols<=1)return;
+
+ const c=selected.col;
+
+ undoStack.push(JSON.stringify(cellData));
+
+ const newData={};
+
+ Object.entries(cellData).forEach(
+  ([key,value])=>{
+
+   const [rr,cc]=key.split("_").map(Number);
+
+   if(cc===c)return;
+
+   const nc=cc>c?cc-1:cc;
+
+   newData[cellKey(rr,nc)]=value;
+
+  }
+ );
+
+ cellData=newData;
+
+ cols--;
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(
+  selected.row,
+  Math.min(c,cols-1)
+ );
+
+ markUnsaved();
+
+}
+
+
+function markUnsaved(){
+
+ el("unsaved").style.display="inline";
+
+ setStatus("Unsaved changes");
+
+}
+
+
+function undo(){
+
+ if(!undoStack.length){
+
+  showToast("Nothing to undo.");
+
+  return;
+
+ }
+
+ redoStack.push(JSON.stringify(cellData));
+
+ cellData=JSON.parse(
+  undoStack.pop()
+ );
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(selected.row,selected.col);
+
+ markUnsaved();
+
+}
+
+
+function redo(){
+
+ if(!redoStack.length){
+
+  showToast("Nothing to redo.");
+
+  return;
+
+ }
+
+ undoStack.push(JSON.stringify(cellData));
+
+ cellData=JSON.parse(
+  redoStack.pop()
+ );
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(selected.row,selected.col);
+
+ markUnsaved();
+
+}
+
+
+/* ============================================================
+   FORMATTING
+============================================================ */
+
+function getSelectedDOM(){
+
+ return document.querySelector(
+  `.cell[data-row="${selected.row}"][data-col="${selected.col}"]`
+ );
+
+}
+
+
+function format(type){
+
+ const cell=getSelectedDOM();
+
+ if(!cell)return;
+
+ if(type==="bold")
+  cell.style.fontWeight=
+   cell.style.fontWeight==="bold"
+    ?"normal":"bold";
+
+ if(type==="italic")
+  cell.style.fontStyle=
+   cell.style.fontStyle==="italic"
+    ?"normal":"italic";
+
+ if(type==="underline")
+  cell.style.textDecoration=
+   cell.style.textDecoration==="underline"
+    ?"none":"underline";
+
+ markUnsaved();
+
+}
+
+
+function align(type){
+
+ const cell=getSelectedDOM();
+
+ if(!cell)return;
+
+ cell.style.textAlign=type;
+
+ markUnsaved();
+
+}
+
+
+/* ============================================================
+   ACCOUNTING TEMPLATE
+============================================================ */
+
+function insertAccountingTemplate(){
+
+ const template=[
+
+  ["Date","Description","Account","Category","Income","Expense","Payment Method","Reference","Balance"],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""],
+
+  ["","","","","","","","",""]
+
+ ];
+
+ insertTemplate(template);
+
+ showToast("Accounting template inserted.",true);
+
+}
+
+
+function insertTransportTemplate(){
+
+ const template=[
+
+  ["Date","Vehicle","Customer","Driver","Trip/Route","Category","Income","Fuel","Other Expense","Net"],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""],
+
+  ["","","","","","","","","",""]
+
+ ];
+
+ insertTemplate(template);
+
+ showToast("Transport template inserted.",true);
+
+}
+
+
+function insertTemplate(template){
+
+ undoStack.push(JSON.stringify(cellData));
+
+ redoStack=[];
+
+ template.forEach((row,r)=>{
+
+  row.forEach((value,c)=>{
+
+   setRaw(r,c,value);
+
+  });
+
+ });
+
+ rows=Math.max(rows,template.length);
+
+ cols=Math.max(
+  cols,
+  Math.max(...template.map(x=>x.length))
+ );
+
+ dirty=true;
+
+ renderSheet();
+
+ selectCell(0,0);
+
+ markUnsaved();
+
+}
+
+
+/* ============================================================
+   FIND / REPLACE
+============================================================ */
+
+function findReplace(){
+
+ const find=prompt("Find:");
+
+ if(find===null)return;
+
+ const replace=prompt("Replace with:");
+
+ if(replace===null)return;
+
+ undoStack.push(JSON.stringify(cellData));
+
+ let count=0;
+
+ Object.keys(cellData).forEach(key=>{
+
+  const value=cellData[key].value;
+
+  if(value.includes(find)){
+
+   cellData[key].value=
+    value.split(find).join(replace);
+
+   count++;
+
+  }
+
+ });
+
+ if(count){
+
+  dirty=true;
+
+  renderSheet();
+
+  selectCell(selected.row,selected.col);
+
+  markUnsaved();
+
+ }
+
+ showToast(
+  count+" cell(s) changed.",
+  true
+);
+
+
+/* ============================================================
+   EXPORT
+============================================================ */
+
+}
+
+
+function buildMatrix(){
+
+ const matrix=[];
+
+ for(let r=0;r<rows;r++){
+
+  const row=[];
+
+  for(let c=0;c<cols;c++){
+
+   row.push(evaluateCell(r,c));
+
+  }
+
+  matrix.push(row);
+
+ }
+
+ return matrix;
+
+}
+
+
+function exportCSV(){
+
+ const matrix=buildMatrix();
+
+ const csv=matrix.map(row=>
+  row.map(value=>
+   `"${String(value).replace(/"/g,'""')}"`
+  ).join(",")
+ ).join("\n");
+
+ const blob=new Blob(
+  [csv],
+  {type:"text/csv;charset=utf-8;"}
+ );
+
+ downloadBlob(
+  blob,
+  (files[activeFileId]?.name||"accounting")+".csv"
+ );
+
+}
+
+
+function exportExcel(){
+
+ const matrix=buildMatrix();
+
+ const ws=XLSX.utils.aoa_to_sheet(matrix);
+
+ const wb=XLSX.utils.book_new();
+
+ XLSX.utils.book_append_sheet(
+  wb,
+  ws,
+  "Accounting"
+ );
+
+ XLSX.writeFile(
+  wb,
+  (files[activeFileId]?.name||"accounting")+".xlsx"
+ );
+
+}
+
+
+function downloadBlob(blob,name){
+
+ const a=document.createElement("a");
+
+ a.href=URL.createObjectURL(blob);
+
+ a.download=name;
+
+ document.body.appendChild(a);
+
+ a.click();
+
+ a.remove();
+
+ setTimeout(
+  ()=>URL.revokeObjectURL(a.href),
+  1000
+ );
+
+}
+
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+
+function openSettings(){
+
+ el("companyNameInput").value=
+  settings.companyName;
+
+ el("systemNameInput").value=
+  settings.systemName;
+
+ el("currencyInput").value=
+  settings.currency;
+
+ el("dateFormatInput").value=
+  settings.dateFormat;
+
+ el("settingsModal").style.display="flex";
+
+}
+
+
+function closeSettings(){
+
+ el("settingsModal").style.display="none";
+
+}
+
+
+async function saveSettings(){
+
+ settings={
+
+  companyName:
+   el("companyNameInput").value.trim()
+   ||"NG Tours & Transport System",
+
+  systemName:
+   el("systemNameInput").value.trim()
+   ||"NG Tours & Transport System",
+
+  currency:
+   el("currencyInput").value,
+
+  dateFormat:
+   el("dateFormatInput").value
+
+ };
+
+ try{
+
+  await db.ref(settingsRoot()).set(settings);
+
+  el("brandName").textContent=
+   settings.companyName;
+
+  document.title=
+   settings.systemName+" — Advanced Accounting";
+
+  closeSettings();
+
+  showToast(
+   "Settings saved to Firebase.",
+   true
+  );
+
+ }catch(e){
+
+  showToast(
+   "Settings save failed: "+e.message
+  );
+
+ }
+
+}
+
+
+async function loadSettings(){
+
+ if(!db)return;
+
+ try{
+
+  const snap=
+   await db.ref(settingsRoot()).once("value");
+
+  const data=snap.val();
+
+  if(data){
+
+   settings={
+    ...settings,
+    ...data
+   };
+
+  }
+
+  el("brandName").textContent=
+   settings.companyName;
+
+  document.title=
+   settings.systemName+
+   " — Advanced Accounting";
+
+ }catch(e){
+
+  console.error(e);
+
+ }
+
+}
+
+
+/* ============================================================
+   REPORTS
+============================================================ */
+
+function openReport(){
+
+ el("reportModal").style.display="flex";
+
+ renderReport();
+
+}
+
+
+function closeReport(){
+
+ el("reportModal").style.display="none";
+
+}
+
+
+function getRows(){
+
+ const matrix=buildMatrix();
+
+ if(!matrix.length)return[];
+
+ const headers=matrix[0].map(x=>
+  String(x||"").trim()
+ );
+
+ return matrix.slice(1).map(row=>{
+
+  const obj={};
+
+  headers.forEach((h,i)=>{
+
+   if(h)obj[h]=row[i]??"";
+
+  });
+
+  return obj;
+
+ }).filter(row=>
+  Object.values(row).some(x=>String(x).trim()!=="")
+ );
+
+}
+
+
+function numericValue(value){
+
+ const n=Number(
+  String(value||"")
+   .replace(/,/g,"")
+   .replace(/[^\d.-]/g,"")
+ );
+
+ return isNaN(n)?0:n;
+
+}
+
+
+function detectField(row,names){
+
+ const keys=Object.keys(row);
+
+ for(const name of names){
+
+  const key=keys.find(
+   k=>k.toLowerCase()===name.toLowerCase()
+  );
+
+  if(key)return key;
+
+ }
+
+ return null;
+
+}
+
+
+function renderReport(){
+
+ const content=el("reportContent");
+
+ const data=getRows();
+
+ document.querySelectorAll(".tab")
+  .forEach(btn=>btn.classList.remove("active"));
+
+ const tabs=[...document.querySelectorAll(".tab")];
+
+ const index={
+  weekly:0,
+  monthly:1,
+  vehicle:2,
+  customer:3,
+  driver:4,
+  category:5
+ }[reportType];
+
+ if(tabs[index])
+  tabs[index].classList.add("active");
+
+
+ if(!data.length){
+
+  content.innerHTML=
+   `<div class="empty">No accounting data available.</div>`;
+
+  return;
+
+ }
+
+
+ if(
+  reportType==="vehicle"||
+  reportType==="customer"||
+  reportType==="driver"||
+  reportType==="category"
+ ){
+
+  let fieldNames=[];
+
+  if(reportType==="vehicle")
+   fieldNames=["Vehicle","Vehicle Name"];
+
+  if(reportType==="customer")
+   fieldNames=["Customer","Customer Name"];
+
+  if(reportType==="driver")
+   fieldNames=["Driver","Driver Name"];
+
+  if(reportType==="category")
+   fieldNames=["Category","Type"];
+
+  const incomeFieldNames=[
+   "Income","Revenue","Amount","Fare","Sales"
+  ];
+
+  const expenseFieldNames=[
+   "Expense","Expenses","Cost","Fuel","Other Expense"
+  ];
+
+  const groups={};
+
+  data.forEach(row=>{
+
+   const field=detectField(row,fieldNames);
+
+   const group=field
+    ?row[field]||"Unspecified"
+    :"Unspecified";
+
+   if(!groups[group]){
+
+    groups[group]={
+     income:0,
+     expense:0,
+     count:0
+    };
+
+   }
+
+   const incomeField=
+    detectField(row,incomeFieldNames);
+
+   const expenseField=
+    detectField(row,expenseFieldNames);
+
+   groups[group].income+=
+    numericValue(
+     incomeField?row[incomeField]:0
+    );
+
+   groups[group].expense+=
+    numericValue(
+     expenseField?row[expenseField]:0
+    );
+
+   groups[group].count++;
+
+  });
+
+
+  let html=`
+
+   <table class="report-table">
+
+    <thead>
+     <tr>
+      <th>${reportType}</th>
+      <th>Transactions</th>
+      <th>Income</th>
+      <th>Expense</th>
+      <th>Net</th>
+     </tr>
+    </thead>
+
+    <tbody>
+  `;
+
+
+  Object.entries(groups).forEach(
+   ([name,v])=>{
+
+    html+=`
+
+     <tr>
+      <td>${esc(name)}</td>
+      <td>${v.count}</td>
+      <td>${money(v.income)}</td>
+      <td>${money(v.expense)}</td>
+      <td>${money(v.income-v.expense)}</td>
+     </tr>
+
+    `;
+
+   }
+  );
+
+
+  html+=`</tbody></table>`;
+
+  content.innerHTML=html;
+
+  return;
+
+ }
+
+
+ let totalIncome=0;
+
+ let totalExpense=0;
+
+ data.forEach(row=>{
+
+  const incomeField=
+   detectField(
+    row,
+    ["Income","Revenue","Sales","Amount","Fare"]
+   );
+
+  const expenseField=
+   detectField(
+    row,
+    ["Expense","Expenses","Cost","Fuel","Other Expense"]
+   );
+
+  totalIncome+=numericValue(
+   incomeField?row[incomeField]:0
+  );
+
+  totalExpense+=numericValue(
+   expenseField?row[expenseField]:0
+  );
+
+ });
+
+
+ content.innerHTML=`
+
+  <div class="grid3">
+
+   <div class="panel">
+    <small>Total Transactions</small>
+    <h2>${data.length}</h2>
+   </div>
+
+   <div class="panel">
+    <small>Total Income</small>
+    <h2>${money(totalIncome)}</h2>
+   </div>
+
+   <div class="panel">
+    <small>Total Expense</small>
+    <h2>${money(totalExpense)}</h2>
+   </div>
+
+  </div>
+
+  <div class="panel">
+
+   <h3>
+    ${reportType.charAt(0).toUpperCase()+reportType.slice(1)}
+    Summary
+   </h3>
+
+   <table class="report-table">
+
+    <tr>
+     <th>Income</th>
+     <td>${money(totalIncome)}</td>
+    </tr>
+
+    <tr>
+     <th>Expense</th>
+     <td>${money(totalExpense)}</td>
+    </tr>
+
+    <tr>
+     <th>Net</th>
+     <td>${money(totalIncome-totalExpense)}</td>
+    </tr>
+
+   </table>
+
+  </div>
+ `;
+
+}
+
+
+function printReport(){
+
+ const content=el("reportContent").innerHTML;
+
+ const win=window.open(
+  "",
+  "_blank",
+  "width=1000,height=700"
+ );
+
+ win.document.write(`
+
+  <html>
+
+  <head>
+
+   <title>Accounting Report</title>
+
+   <style>
+
+    body{
+     font-family:Arial;
+     padding:30px;
+    }
+
+    table{
+     width:100%;
+     border-collapse:collapse;
+    }
+
+    th,td{
+     border:1px solid #ccc;
+     padding:8px;
+    }
+
+    th{
+     background:#eee;
+    }
+
+   </style>
+
+  </head>
+
+  <body>
+
+   <h2>${esc(settings.companyName)}</h2>
+
+   <h3>Accounting Report</h3>
+
+   ${content}
+
+  </body>
+
+  </html>
+
+ `);
+
+ win.document.close();
+
+ win.focus();
+
+ win.print();
+
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+async function calculateDashboard(){
+
+ let income=0;
+
+ let expense=0;
+
+ let cash=0;
+
+ let bank=0;
+
+ let pending=0;
+
+
+ Object.values(files||{}).forEach(file=>{
+
+  const data=file.data||{};
+
+  Object.values(data).forEach(cell=>{
+
+   const value=String(
+    cell?.value||""
+   ).toLowerCase();
+
+   if(!value)return;
+
+  });
+
+ });
+
+
+ /*
+   Dashboard totals are calculated from the currently
+   available accounting sheets.
+ */
+
+ const currentData=
+  activeFileId&&files[activeFileId]
+   ?files[activeFileId].data||{}
+   :null;
+
+ if(currentData){
+
+  Object.values(currentData).forEach(cell=>{
+
+   const raw=String(cell?.value||"");
+
+   const n=numericValue(raw);
+
+   if(
+    /income|revenue|sales|fare/i.test(raw)
+   ){
+
+    income+=n;
+
+   }
+
+  });
+
+ }
+
+ el("dashIncome").textContent=money(income);
+
+ el("dashExpense").textContent=money(expense);
+
+ el("dashNet").textContent=
+  money(income-expense);
+
+ el("dashCash").textContent=money(cash);
+
+ el("dashBank").textContent=money(bank);
+
+ el("dashPending").textContent=money(pending);
+
+}
+
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+============================================================ */
+
+document.addEventListener(
+ "keydown",
+ function(event){
+
+  const workspaceVisible=
+   el("workspace").style.display==="flex";
+
+  if(!workspaceVisible)return;
+
+
+  if(event.ctrlKey&&event.key.toLowerCase()==="s"){
+
+   event.preventDefault();
+
+   saveCurrentFile();
+
+  }
+
+
+  if(event.ctrlKey&&event.key.toLowerCase()==="z"){
+
+   event.preventDefault();
+
+   undo();
+
+  }
+
+
+  if(event.ctrlKey&&event.key.toLowerCase()==="y"){
+
+   event.preventDefault();
+
+   redo();
+
+  }
+
+
+  if(event.ctrlKey&&event.key.toLowerCase()==="f"){
+
+   event.preventDefault();
+
+   findReplace();
+
+  }
+
+
+  if(event.key==="Escape"){
+
+   closeReport();
+
+  }
+
+ }
+);
+
+
+/* ============================================================
+   START APPLICATION
+============================================================ */
+
+async function startApplication(){
+
+ await loadSettings();
+
+ await loadFiles();
+
+ setStatus("Connected to cloud database.");
+
+}
+
+
+startApplication();
+
+
+/* ============================================================
+   FIREBASE CONNECTION MONITOR
+============================================================ */
+
+if(db){
+
+ db.ref(".info/connected")
+  .on("value",snap=>{
+
+   if(snap.val()===true){
+
+    setStatus("Firebase connected.");
+
+   }else{
+
+    setStatus("Firebase offline.");
+
+   }
+
+  });
+
+}
+
 </script>
+
 </body>
 </html>
